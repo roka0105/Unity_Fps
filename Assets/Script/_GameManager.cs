@@ -236,6 +236,10 @@ public class _GameManager : Singleton<_GameManager>
 	{
 		return m_GunDataList[index];
 	}
+	public StageData GetStageData()
+	{
+		return m_StageDataList[nowstage];
+	}
 	private void Start()
 	{
 		

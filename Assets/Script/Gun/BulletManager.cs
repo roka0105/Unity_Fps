@@ -13,6 +13,7 @@ public class BulletManager : Singleton<BulletManager>
 	protected _GameManager M_Game => _GameManager.Instance;
 	protected PlayerManager M_Player => PlayerManager.Instance;
 	protected CameraManager M_Camera => CameraManager.Instance;
+	protected BlockManager M_Block=>BlockManager.Instance;
 
 	Dictionary<E_BulletType, MemoryPool<Bullet>> BulletPoollist;
 	Transform BulletParent;
@@ -26,6 +27,10 @@ public class BulletManager : Singleton<BulletManager>
 		{
 			BulletPoollist.Add((E_BulletType)i, new MemoryPool<Bullet>(M_Game.BulletPrefeblist[i], 100, BulletParent));
 		}
+	}
+	public void Awake()
+	{
+		//delegate_crush_block+=M_
 	}
 	public Bullet Spawn(int type,int count=1)
 	{

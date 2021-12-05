@@ -38,6 +38,7 @@ public class BlockManager : Singleton<BlockManager>
 		Blue = Resources.Load<Material>("Material/Sky");
 		Pink = Resources.Load<Material>("Material/Pink");
 	}
+	
 	public Block Spawn(int _type)
 	{
 		Block item = null;
@@ -55,6 +56,7 @@ public class BlockManager : Singleton<BlockManager>
 				break;
 			case E_BlockType.Move:
 				item = BlockMemorypool[E_BlockType.Move].Spawn();
+				
 				if (item.P_Type == (int)E_BlockType.None)
 				{
 					item.P_Type = (int)E_BlockType.Move;
@@ -64,6 +66,8 @@ public class BlockManager : Singleton<BlockManager>
 				break;
 			case E_BlockType.Crush:
 				item = BlockMemorypool[E_BlockType.Crush].Spawn();
+				item.P_Type =(int)E_BlockType.Crush;
+				item.Init(M_Game.GetStageData());
 				if (item.P_Type == (int)E_BlockType.None)
 				{
 					item.P_Type = (int)E_BlockType.Crush;

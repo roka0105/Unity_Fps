@@ -5,6 +5,9 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
 	protected BulletManager M_Bullet => BulletManager.Instance;
+
+	public delegate void OnCrushBlock(float dmg);
+	public static event OnCrushBlock OnCrush;
 	E_BulletType m_type;
 	int m_TotalBullet;
 	float m_AtkRange;//사거리
@@ -14,6 +17,7 @@ public class Bullet : MonoBehaviour
 	Vector3 startpos;//총을 쏜 시점의 위치.
 	Vector3 dir;
 	Bullet m_this;
+	
 	public Vector3 SetStartPos
 	{
 		set { startpos = value; }
@@ -64,6 +68,8 @@ public class Bullet : MonoBehaviour
 				break;
 			case (int)E_Layer.CrushBlock:
 				//데미지 주기
+				M_Bullet.DeSpawn((int)m_type, m_this);
+				OnCrush(m_Atk);
 				break;
 			case (int)E_Layer.PlayerBullet:
 				M_Bullet.DeSpawn((int)m_type, m_this);

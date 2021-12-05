@@ -151,9 +151,9 @@ public class MapManager : Singleton<MapManager>
 		collider.gameObject.layer = (int)E_Layer.CrushBlock;
 		collider.transform.position = item.transform.position+Vector3.up;
 		if (type == 0)
-			setcollider.size = new Vector3(2.5f, 5f, 2f);
+			setcollider.size = new Vector3(2.2f, 5f, 2f);
 		else
-			setcollider.size = new Vector3(2f, 5f, 2.5f);
+			setcollider.size = new Vector3(2f, 5f, 2.2f);
 	}
 	void CreateWall()
 	{
