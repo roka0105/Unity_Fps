@@ -59,7 +59,7 @@ public class MapManager : Singleton<MapManager>
 		{
 			//block type 0:nomal 1:move 2:crush
 			Block item = Blocklist[_type][i];
-			item.gameObject.layer = -1;
+		
 			item.P_Position = -1;
 			if (item == null)
 			{
@@ -93,13 +93,12 @@ public class MapManager : Singleton<MapManager>
 					Debug.Log("block spawn null!");
 					return;
 				}
-				currentpos.x = start.x + j * 2-1f;
-				currentpos.z = start.z - i * 2+1f;
+				currentpos.x = start.x + j * 2;
+				currentpos.z = start.z - i * 2;
 				//position 1:ground 2:wall
 				item.P_Position = 1;
 
 				item.transform.position = currentpos;
-				item.gameObject.layer = 9;
 				item.gameObject.SetActive(true);
 				if (Blocklist[(int)E_BlocklistType.Ground] == null)
 					Blocklist[(int)E_BlocklistType.Ground] = new List<Block>();
@@ -112,7 +111,38 @@ public class MapManager : Singleton<MapManager>
 		
 		collider.transform.SetParent(ColliderParent.transform);
 	}
+	void CreateCollider(float startpt,int type)
+	{
+		Vector3 temp;
+		Vector3 position=new Vector3(0,0,0);
+		GameObject collider = new GameObject("MapCollider", typeof(BoxCollider));
+		BoxCollider setcollider = collider.GetComponent<BoxCollider>();
+		collider.transform.SetParent(ColliderParent.transform);
+		collider.gameObject.layer = 7;
+		temp.x = 0;
+		temp.y = 5*2;
+		temp.z = 0;
+		if(type==0)
+		{
+			temp.x = 2;
+			temp.z = Mathf.Abs(start.z - end.z);
+			position.x = startpt;
+			position.z = collider.transform.position.z;
+			position.y = 1;
+		}
+		else if(type==1)
+		{
+			temp.x = Mathf.Abs(start.x - end.x);
+			temp.z =2;
+			position.x = collider.transform.position.x;
+			position.z = startpt;
+			position.y = 1;
+		}
+		
+		setcollider.size = temp;
 
+		collider.transform.position = position;
+	}
 	void CreateWall()
 	{
 		if (Blocklist[(int)E_BlocklistType.Wall] != null || Blocklist[(int)E_BlocklistType.Crush] != null)
@@ -123,27 +153,32 @@ public class MapManager : Singleton<MapManager>
 		startwall = start;
 		endwall = end;
 		m_Ylimit_index = 5;
-		m_Xlimit_index = (int)(Mathf.Abs(start.x) + Mathf.Abs(end.x)) / 2 + 1;
-		m_Zlimit_index = (int)(Mathf.Abs(start.z) + Mathf.Abs(end.z)) / 2 + 1;
+		m_Xlimit_index = (int)(Mathf.Abs(start.x)+ Mathf.Abs(end.x)) / 2 ;
+		m_Zlimit_index = (int)(Mathf.Abs(start.z)+ Mathf.Abs(end.z)) / 2 ;
 		m_TotalBlockCount = m_Xlimit_index * m_Zlimit_index;
-		float tempz = start.z - m_Zlimit_index * 2;
-		float tempx = start.x + m_Xlimit_index * 2;
-		int type = 0;
+	 
+		float tempz = end.z;
+		float tempx = end.x;
+
 		#region 하단&오른쪽 벽
-		startwall.z = tempz;
-		startwall.x = tempx;
+		CreateCollider(tempz, 1);
+		CreateCollider(tempx, 0);
 		SideZWall(tempz, false);
 		SideXWall(tempx, false);
 		#endregion
 		#region 중간&중간 벽
 		tempz = start.z - m_Zlimit_index;
 		tempx = start.x + m_Xlimit_index;
+		CreateCollider(tempz, 1);
+		CreateCollider(tempx, 0);
 		SideZWall(tempz, true);
 		SideXWall(tempx, true);
 		#endregion
 		#region 상단&왼쪽 벽
 		tempz = start.z;
 		tempx = start.x;
+		CreateCollider(tempz, 1);
+		CreateCollider(tempx, 0);
 		SideZWall(tempz, false);
 		SideXWall(tempx, false);
 		#endregion
@@ -159,7 +194,7 @@ public class MapManager : Singleton<MapManager>
 		RandomIndex[0] = -1;
 		RandomIndex[1] = -1;
 		bool nowtype;
-		float distance;
+		
 		#region 벽에 부셔지는 블럭 생성을 위한 위치 선정 (다음 방으로 이동할 문)
 		if (create_crush)
 		{
@@ -169,6 +204,7 @@ public class MapManager : Singleton<MapManager>
 		#endregion
 		for (int i = 0; i < m_Xlimit_index; ++i)
 		{
+			currentpos.x = start.x + i * 2;
 			for (int j = 0; j < m_Ylimit_index; ++j)
 			{
 				Block item = null;
@@ -188,12 +224,9 @@ public class MapManager : Singleton<MapManager>
 					Debug.Log("block spawn null!");
 					return;
 				}
-				currentpos.x = start.x + i * 2;
-				currentpos.z = start.z + 1;
 				currentpos.y = start.y + j;
 				item.transform.position = currentpos;
 				item.gameObject.SetActive(true);
-				item.gameObject.layer = 7;
 				//position 1:ground 2:wall
 				item.P_Position = 2;
 				if (create_crush && nowtype)
@@ -212,6 +245,7 @@ public class MapManager : Singleton<MapManager>
 				}
 			}
 		}
+		endwall.z = currentpos.z;
 		endwall.x = currentpos.x;
 		endwall.y = currentpos.y;
 	}
@@ -219,6 +253,7 @@ public class MapManager : Singleton<MapManager>
 	{
 		Vector3 currentpos;
 		currentpos.y = m_Ylimit_index;
+		currentpos.z = 0;
 		currentpos.x = x;
 		int[] RandomIndex = new int[2];
 		RandomIndex[0] = -1;
@@ -234,6 +269,7 @@ public class MapManager : Singleton<MapManager>
 		#endregion
 		for (int i = 0; i <= m_Zlimit_index; ++i)
 		{
+			currentpos.z = start.z - i * 2;
 			for (int j = 0; j < m_Ylimit_index; ++j)
 			{
 				Block item = null;
@@ -254,8 +290,6 @@ public class MapManager : Singleton<MapManager>
 					Debug.Log("block spawn null!");
 					return;
 				}
-				currentpos.z = start.z - i * 2;
-				currentpos.x = start.x - 1;
 				currentpos.y = start.y + j;
 				item.transform.position = currentpos;
 				item.gameObject.SetActive(true);
@@ -280,6 +314,9 @@ public class MapManager : Singleton<MapManager>
 
 			}
 		}
+		endwall.x = start.x;
+		endwall.z = currentpos.z;
+		endwall.y = currentpos.y;
 	}
 	private void Awake()
 	{

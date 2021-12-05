@@ -154,7 +154,7 @@ public class _GameManager : Singleton<_GameManager>
 			RandomPlayerPos();	
 			
 			GameObject player = M_Player.GetObjPlayer;
-			Debug.LogFormat($"여기서 반복 {0},{1},{2}",player.transform.position.x, player.transform.position.y, player.transform.position.z);
+		
 			if (!RaycastSpawn(player))
 			{
 				break;
@@ -201,9 +201,9 @@ public class _GameManager : Singleton<_GameManager>
 		float x;
 		float z;
 		float y = 0;	
-		x = Random.Range(m_Startpos.x , m_Endpos.x );
+		x = Random.Range(m_Startpos.x +0.5f, m_Endpos.x-0.5f );
 		y = m_RespawnPos.y;
-		z = Random.Range(m_Startpos.z , m_Endpos.z );
+		z = Random.Range(m_Startpos.z- 0.5f, m_Endpos.z+ 0.5f);
 
 		M_Player.SetPos(x, y, z);
 
