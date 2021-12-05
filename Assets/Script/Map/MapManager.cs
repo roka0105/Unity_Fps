@@ -143,6 +143,18 @@ public class MapManager : Singleton<MapManager>
 
 		collider.transform.position = position;
 	}
+	void CreateCrushCollider(Block item,int type)
+	{
+		GameObject collider = new GameObject("MapCollider", typeof(BoxCollider));
+		BoxCollider setcollider = collider.GetComponent<BoxCollider>();
+		collider.transform.SetParent(ColliderParent.transform);
+		collider.gameObject.layer = (int)E_Layer.CrushBlock;
+		collider.transform.position = item.transform.position+Vector3.up;
+		if (type == 0)
+			setcollider.size = new Vector3(2.5f, 5f, 2f);
+		else
+			setcollider.size = new Vector3(2f, 5f, 2.5f);
+	}
 	void CreateWall()
 	{
 		if (Blocklist[(int)E_BlocklistType.Wall] != null || Blocklist[(int)E_BlocklistType.Crush] != null)
@@ -233,7 +245,10 @@ public class MapManager : Singleton<MapManager>
 				{
 					if (Blocklist[(int)E_BlocklistType.Crush] == null)
 						Blocklist[(int)E_BlocklistType.Crush] = new List<Block>();
-
+					if(j==0)
+					{
+						CreateCrushCollider(item,1);
+					}
 					Blocklist[(int)E_BlocklistType.Crush].Add(item);
 				}
 				else
@@ -302,6 +317,10 @@ public class MapManager : Singleton<MapManager>
 					if (Blocklist[(int)E_BlocklistType.Crush] == null)
 						Blocklist[(int)E_BlocklistType.Crush] = new List<Block>();
 
+					if (j == 0)
+					{
+						CreateCrushCollider(item,0);
+					}
 					Blocklist[(int)E_BlocklistType.Crush].Add(item);
 				}
 				else

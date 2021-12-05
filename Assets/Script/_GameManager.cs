@@ -2,7 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum E_Layer
+{
+	None=-1,
+	Minimap=6,
+	Block,
+	Player,
+	CrushBlock,
+	PlayerBullet,
+	Max
 
+}
 #region 데이터 구조체 모음 *나중에 해당하는 클래스 위에 배치하기*
 public struct StageData
 {
@@ -13,7 +23,7 @@ public struct StageData
 }
 public struct GunData
 {
-	public int type;//enum으로 나중에 바꾸기 임시로 int
+	public E_BulletType m_type;//enum으로 나중에 바꾸기 임시로 int
 	public int m_TotalBullet;
 	public float m_AtkRange;//사거리
 	public float m_Atk;
@@ -66,6 +76,7 @@ public class _GameManager : Singleton<_GameManager>
 	MapManager M_Map => MapManager.Instance;
 	PlayerManager M_Player => PlayerManager.Instance;
 	CameraManager M_Camera => CameraManager.Instance;
+	BulletManager M_Bullet => BulletManager.Instance;
 	#region 맵 매니저에 줄 정보
 	[SerializeField]
 	Vector3 m_Startpos;
@@ -78,7 +89,7 @@ public class _GameManager : Singleton<_GameManager>
 	public GameObject Colliderparent;
 	int nowstage;
 
-	List<StageData> m_StageData;
+	List<StageData> m_StageDataList;
 	public GameObject ColliderParent
 	{
 		get { return Colliderparent; }
@@ -125,6 +136,13 @@ public class _GameManager : Singleton<_GameManager>
 	}
 	#endregion
 	#endregion
+	#region 총에 관한 전역정보
+	public int m_GunTypeCount;
+	public List<GameObject> GunPrefeblist;
+	public List<Bullet> BulletPrefeblist;
+
+	List<GunData> m_GunDataList;
+	#endregion
 	//스테이지 리스트에서 스테이지 관련 정보 읽어와서 현재 게임 상태로 적용하기.
 	void LoadStageData()
 	{
@@ -134,14 +152,14 @@ public class _GameManager : Singleton<_GameManager>
 	{
 		if (!testflag)
 		{
-			m_Startpos = m_StageData[nowstage].m_MapData.m_Startpos;
-			m_Endpos = m_StageData[nowstage].m_MapData.m_Endpos;
+			m_Startpos = m_StageDataList[nowstage].m_MapData.m_Startpos;
+			m_Endpos = m_StageDataList[nowstage].m_MapData.m_Endpos;
 		}
 	}
 	[ContextMenu("맵 생성")]
 	void CreateMap()
 	{
-		if (m_StageData.Count <= 0)
+		if (m_StageDataList.Count <= 0)
 		{
 			Debug.Log("stagedata list null");
 			return;
@@ -212,12 +230,18 @@ public class _GameManager : Singleton<_GameManager>
 	}
 	public void AddCantRespawnList(Vector3 pos)
 	{
-		m_StageData[nowstage].m_MapData.m_CantRespawnPos.Add(pos);
+		m_StageDataList[nowstage].m_MapData.m_CantRespawnPos.Add(pos);
+	}
+	public GunData GetGunData(int index)
+	{
+		return m_GunDataList[index];
 	}
 	private void Start()
 	{
+		
 		m_RespawnPos.y = 1;
-		m_StageData = new List<StageData>();
+		m_StageDataList = new List<StageData>();
+		m_GunDataList = new List<GunData>();
 		StageData temp1 = new StageData();
 		//StageData temp2 = new StageData();
 		//StageData temp3=new StageData();
@@ -243,7 +267,9 @@ public class _GameManager : Singleton<_GameManager>
 		temp1.m_PlayerData.m_Speed = 3f;
 		//temp1.m_PlayerData.m_SkillCoolTime = 5f;
 		//temp1.m_PlayerData.m_SkillRange = 15f;
+		
 		#endregion
+		
 		#region 적 정보 초기화
 		//* 임시로 한가지 타입의 적을 사용하려고 여기서 초기화 하는데 원래는 적 타입별로 pool생성할때 기본값 설정해야함.
 		//스테이지 정보에서 가져와야할건 스테이지 1에서는 어떤 타입의 몬스터가 출현할지에 대한것.
@@ -257,6 +283,20 @@ public class _GameManager : Singleton<_GameManager>
 		temp1.m_EnemyData.m_Skill.m_SkillCoolTime = 5f;
 		temp1.m_EnemyData.m_Skill.m_SkillRange = 10f;
 		#endregion
-		m_StageData.Add(temp1);
+		#region 총 전역정보
+		m_GunTypeCount = BulletPrefeblist.Count;//GunPrefeblist.Count; 총  아직 구현 안해가지고.
+		GunData gunData = new GunData();
+		gunData.m_type = E_BulletType.Nomal;
+		gunData.m_TotalBullet = 10;//장전을 요구하는 총알 max치.
+		gunData.m_Atk = 8f;
+		gunData.m_AtkRange = 10f;
+		gunData.m_AtkSpeed = 3f;
+		gunData.m_CoolTime = 4f;//장전시간
+		#endregion
+		m_StageDataList.Add(temp1);
+		m_GunDataList.Add(gunData);
+
+		M_Bullet.Init();
+
 	}
 }

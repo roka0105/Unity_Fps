@@ -16,6 +16,7 @@ public class CameraMove : MonoBehaviour
 	Camera camera;
 	protected CameraManager M_Camera => CameraManager.Instance;
 	protected PlayerManager M_Player => PlayerManager.Instance;
+	protected BulletManager M_Bullet => BulletManager.Instance;
 	void SetPos(E_CameraType _type)
 	{
 		Vector3 temp = M_Camera.GetPos();

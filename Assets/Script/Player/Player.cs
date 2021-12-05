@@ -8,6 +8,7 @@ public class Player : Singleton<Player>
 	Vector3 PlayerPos;
 	float Speed;
 	float Scale;
+
 	public Vector3 GetPlayerPos
 	{
 		get { return this.transform.position; }
@@ -110,6 +111,15 @@ public class Player : Singleton<Player>
 		PlayerPos.y = 0;
 		this.transform.position += PlayerPos;
 	}
+	public void Shot()
+	{
+		if(Input.GetMouseButtonDown(0))
+		{  //총매니저에서 가져온 현재 장착한 총 정보(총 타입, 한번 쏠때 몇개씩 나가는지)를 넣음
+		   //아직 구현 안해서 기본값으로 진행
+			M_Player.ShotBullet((int)E_BulletType.Nomal, 1);
+		}
+	}
+
 	void Start()
 	{
 		PlayerPos = this.transform.position;
@@ -119,5 +129,6 @@ public class Player : Singleton<Player>
 	void Update()
 	{
 		Move();
+		Shot();
 	}
 }

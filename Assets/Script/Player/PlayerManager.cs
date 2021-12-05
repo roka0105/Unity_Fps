@@ -5,7 +5,14 @@ using UnityEngine;
 public class PlayerManager : Singleton<PlayerManager>
 {
     Player M_Playerobj => Player.Instance;
-    CameraManager M_Camera => CameraManager.Instance;
+    BulletManager M_Bullet => BulletManager.Instance;
+   
+    public void ShotBullet(int guntype,int count)
+	{
+        Bullet item=M_Bullet.Spawn(guntype, count);
+        item.transform.localEulerAngles = new Vector3(90f, M_Playerobj.transform.eulerAngles.y, 0f);
+	}
+   
     public bool ActiveSelf()
 	{
         return M_Playerobj.ActiveSelf;
@@ -26,15 +33,5 @@ public class PlayerManager : Singleton<PlayerManager>
     {
         get { return M_Playerobj.gameObject; }
     }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-       
-    }
+   
 }
