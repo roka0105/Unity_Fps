@@ -18,6 +18,8 @@ public class MapManager : Singleton<MapManager>
 	protected BlockManager M_Block => BlockManager.Instance;
 
 	protected Dictionary<int, List<Block>> Blocklist;
+	
+	
 	int m_Xlimit_index;
 	int m_Zlimit_index;
 	int m_Ylimit_index;
@@ -110,6 +112,7 @@ public class MapManager : Singleton<MapManager>
 		setcollider.size = Groundsize;
 		
 		collider.transform.SetParent(ColliderParent.transform);
+		
 	}
 	void CreateCollider(float startpt,int type)
 	{
@@ -142,18 +145,22 @@ public class MapManager : Singleton<MapManager>
 		setcollider.size = temp;
 
 		collider.transform.position = position;
+		
 	}
-	void CreateCrushCollider(Block item,int type)
+	GameObject CreateCrushCollider(Block item,int type)
 	{
-		GameObject collider = new GameObject("MapCollider", typeof(BoxCollider));
+		GameObject collider = new GameObject("CrushCollider", typeof(BoxCollider));
 		BoxCollider setcollider = collider.GetComponent<BoxCollider>();
 		collider.transform.SetParent(ColliderParent.transform);
 		collider.gameObject.layer = (int)E_Layer.CrushBlock;
 		collider.transform.position = item.transform.position+Vector3.up;
+		collider.AddComponent<Block>();
+		collider.GetComponent<Block>().P_HP = M_Game.GetStageData().m_BlockData.m_Hp;
 		if (type == 0)
 			setcollider.size = new Vector3(2.2f, 5f, 2f);
 		else
 			setcollider.size = new Vector3(2f, 5f, 2.2f);
+		return collider;
 	}
 	void CreateWall()
 	{
@@ -206,7 +213,7 @@ public class MapManager : Singleton<MapManager>
 		RandomIndex[0] = -1;
 		RandomIndex[1] = -1;
 		bool nowtype;
-		
+		GameObject door=null;
 		#region 벽에 부셔지는 블럭 생성을 위한 위치 선정 (다음 방으로 이동할 문)
 		if (create_crush)
 		{
@@ -216,6 +223,8 @@ public class MapManager : Singleton<MapManager>
 		#endregion
 		for (int i = 0; i < m_Xlimit_index; ++i)
 		{
+			List<Block> templist = new List<Block>();
+			GameObject tempcollider = null;
 			currentpos.x = start.x + i * 2;
 			for (int j = 0; j < m_Ylimit_index; ++j)
 			{
@@ -245,9 +254,21 @@ public class MapManager : Singleton<MapManager>
 				{
 					if (Blocklist[(int)E_BlocklistType.Crush] == null)
 						Blocklist[(int)E_BlocklistType.Crush] = new List<Block>();
+					
 					if(j==0)
 					{
-						CreateCrushCollider(item,1);
+						tempcollider=CreateCrushCollider(item,1);
+						door = new GameObject("DoorGroup",typeof(Block));
+					}
+					if(j>=1&&j<=3)
+					{
+						if(door!=null)
+						item.transform.SetParent(door.transform);
+						templist.Add(item);
+						if(j==3)
+						{
+							tempcollider.GetComponent<Block>().ColliderItem=templist;
+						}
 					}
 					Blocklist[(int)E_BlocklistType.Crush].Add(item);
 				}
@@ -275,6 +296,7 @@ public class MapManager : Singleton<MapManager>
 		RandomIndex[1] = -1;
 		bool nowtype;
 		float distance;
+		GameObject door = null;
 		#region 벽에 부셔지는 블럭 생성을 위한 위치 선정 (다음 방으로 이동할 문)
 		if (create_crush)
 		{
@@ -284,6 +306,9 @@ public class MapManager : Singleton<MapManager>
 		#endregion
 		for (int i = 0; i <= m_Zlimit_index; ++i)
 		{
+			List<Block> templist = new List<Block>();
+			GameObject tempcollider = null;
+			
 			currentpos.z = start.z - i * 2;
 			for (int j = 0; j < m_Ylimit_index; ++j)
 			{
@@ -316,10 +341,20 @@ public class MapManager : Singleton<MapManager>
 				{
 					if (Blocklist[(int)E_BlocklistType.Crush] == null)
 						Blocklist[(int)E_BlocklistType.Crush] = new List<Block>();
-
 					if (j == 0)
 					{
-						CreateCrushCollider(item,0);
+						tempcollider = CreateCrushCollider(item, 0);
+						door = new GameObject("DoorGroup", typeof(Block));
+					}
+					if (j >= 1 && j <= 3)
+					{
+						if (door != null)
+							item.transform.SetParent(door.transform);
+						templist.Add(item);
+						if (j == 3)
+						{
+							tempcollider.GetComponent<Block>().ColliderItem = templist;
+						}
 					}
 					Blocklist[(int)E_BlocklistType.Crush].Add(item);
 				}
@@ -341,13 +376,15 @@ public class MapManager : Singleton<MapManager>
 	{
 		ColliderParent = M_Game.ColliderParent;
 		Blocklist = new Dictionary<int, List<Block>>();
-		//ground block list
-		Blocklist.Add((int)E_BlocklistType.Ground, null);
+	//ground block list
+	Blocklist.Add((int)E_BlocklistType.Ground, null);
 		//crush block list
 		Blocklist.Add((int)E_BlocklistType.Move, new List<Block>());
 		//move block list
 		Blocklist.Add((int)E_BlocklistType.Crush, null);
 		//wall block list
 		Blocklist.Add((int)E_BlocklistType.Wall, null);
+
+
 	}
 }

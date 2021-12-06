@@ -36,15 +36,38 @@ public class Player : Singleton<Player>
 		Vector3 temp = this.transform.position;
 		float radius = Scale / 2;
 		int mask = 1 << 7;
+		bool[] is_doorcheck = new bool[2];
+		Block crush_collider = null;
 		switch (dir)
 		{   //x
 			case 0:
 				if (number > 0)
 				{
-
-					if (Physics.Raycast(temp, transform.right, out hitinfo, number + radius, mask))
+					#region 문이 열린지 체크
+					RaycastHit[] hitlist = Physics.RaycastAll(temp, transform.right, number + radius );
+					for (int i=0;i<hitlist.Length;++i)
 					{
-						Debug.DrawRay(temp, transform.right * (number + radius), Color.blue, float.PositiveInfinity);
+						if (hitlist[i].transform.gameObject.layer == (int)E_Layer.CrushBlock)
+						{
+							is_doorcheck[0] = true;
+							crush_collider = hitlist[i].transform.GetComponent<Block>();
+						}
+	     //               if (hitlist[i].transform.gameObject.layer==(int)E_Layer.Block)
+						//{
+						//	is_doorcheck[1]= true;
+						//}
+					
+					}
+					if(is_doorcheck[0])//&&is_doorcheck[1])
+					{
+						if(!crush_collider.ColliderItem[0].GetComponentInChildren<MeshRenderer>().enabled)
+						{
+							return number;
+						}
+					}
+					#endregion
+					if (Physics.Raycast(temp, transform.right, out hitinfo, number + radius, mask))
+					{ 
 						//temp.x = temp.x + number - hitinfo.point.x;
 						temp.x = hitinfo.point.x - (temp.x + radius);
 						return temp.x;
@@ -52,6 +75,26 @@ public class Player : Singleton<Player>
 				}
 				else if (number < 0)
 				{
+					#region 문이 열린지 체크
+					RaycastHit[] hitlist = Physics.RaycastAll(temp, -(transform.right), number + radius * 2);
+				
+					for (int i = 0; i < hitlist.Length; ++i)
+					{
+						if (hitlist[i].transform.gameObject.layer == (int)E_Layer.CrushBlock)
+						{
+							is_doorcheck[0] = true;
+							crush_collider = hitlist[i].transform.GetComponent<Block>();
+						}
+					
+					}
+					if (is_doorcheck[0])
+					{
+						if (!crush_collider.ColliderItem[0].GetComponentInChildren<MeshRenderer>().enabled)
+						{
+							return number;
+						}
+					}
+					#endregion
 
 					if (Physics.Raycast(temp, -(transform.right), out hitinfo, -number + radius, mask))
 					{
@@ -67,7 +110,26 @@ public class Player : Singleton<Player>
 			case 1:
 				if (number > 0)
 				{
-
+					#region 문이 열린지 체크
+					RaycastHit[] hitlist = Physics.RaycastAll(temp, transform.forward, number + radius*2);
+					
+					for (int i = 0; i < hitlist.Length; ++i)
+					{
+						if (hitlist[i].transform.gameObject.layer == (int)E_Layer.CrushBlock)
+						{
+							is_doorcheck[0] = true;
+							crush_collider = hitlist[i].transform.GetComponent<Block>();
+						}
+						
+					}
+					if (is_doorcheck[0])
+					{
+						if (!crush_collider.ColliderItem[0].GetComponentInChildren<MeshRenderer>().enabled)
+						{
+							return number;
+						}
+					}
+					#endregion
 					if (Physics.Raycast(temp, transform.forward, out hitinfo, number + radius, mask))
 					{
 						Debug.DrawRay(temp, transform.forward * (number + radius), Color.blue, float.PositiveInfinity);
@@ -78,7 +140,24 @@ public class Player : Singleton<Player>
 				}
 				else if (number < 0)
 				{
-
+					#region 문이 열린지 체크
+					RaycastHit[] hitlist = Physics.RaycastAll(temp, -(transform.forward), number + radius * 2);
+					for (int i = 0; i < hitlist.Length; ++i)
+					{
+						if (hitlist[i].transform.gameObject.layer == (int)E_Layer.CrushBlock)
+						{
+							is_doorcheck[0] = true;
+							crush_collider = hitlist[i].transform.GetComponent<Block>();
+						}
+					}
+					if (is_doorcheck[0])
+					{
+						if (!crush_collider.ColliderItem[0].GetComponentInChildren<MeshRenderer>().enabled)
+						{
+							return number;
+						}
+					}
+					#endregion
 					if (Physics.Raycast(temp, -(transform.forward), out hitinfo, -number + radius, mask))
 					{
 						Debug.DrawRay(temp, transform.forward * (number - radius), Color.blue, float.PositiveInfinity);
