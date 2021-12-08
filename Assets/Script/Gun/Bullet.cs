@@ -76,6 +76,9 @@ public class Bullet : MonoBehaviour
 			case (int)E_Layer.PlayerBullet:
 				M_Bullet.DeSpawn((int)m_type, m_this);
 				break;
+			case (int)E_Layer.Enemy:
+				M_Bullet.DeSpawn((int)m_type, m_this);
+				break;
 		}
 	}
 	private void Update()

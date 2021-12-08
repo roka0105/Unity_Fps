@@ -10,6 +10,7 @@ public enum E_Layer
 	Player,
 	CrushBlock,
 	PlayerBullet,
+	Enemy,
 	Max
 
 }
@@ -330,7 +331,7 @@ public class _GameManager : Singleton<_GameManager>
 		gunData.m_TotalBullet = 10;//장전을 요구하는 총알 max치.
 		gunData.m_Atk = 8f;
 		gunData.m_AtkRange = 10f;
-		gunData.m_AtkSpeed = 3f;
+		gunData.m_AtkSpeed = 10f;
 		gunData.m_CoolTime = 4f;//장전시간
 		#endregion
 		m_StageDataList.Add(temp1);

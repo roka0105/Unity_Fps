@@ -13,9 +13,8 @@ GameObject:
   - component: {fileID: 4354805534651849855}
   - component: {fileID: 4195468371062908660}
   - component: {fileID: 2151669536876350021}
-  - component: {fileID: 7564922096515794598}
   - component: {fileID: 8656614825594743299}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: ememy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -115,19 +114,6 @@ MonoBehaviour:
   m_Hp: 0
   m_Range: 0
   m_Speed: 0
---- !u!135 &7564922096515794598
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 556136534689507413}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Radius: 10
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!195 &8656614825594743299
 NavMeshAgent:
   m_ObjectHideFlags: 0

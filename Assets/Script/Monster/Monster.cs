@@ -17,6 +17,7 @@ public class Monster : MonoBehaviour
 	bool is_movepattern;//시간없어서 좌우로만 움직이게.
 
 	Transform target;
+	MonsterManager M_Monster => MonsterManager.Instance;
 	public E_MonsterType MonsterType
 	{
 		get { return m_type; }
@@ -68,6 +69,12 @@ public class Monster : MonoBehaviour
 			case (int)E_Layer.Player:
 				break;
 			case (int)E_Layer.PlayerBullet:
+				--m_Hp;
+				if(m_Hp<=0)
+				{
+					M_Monster.DeSpawn(this);
+				}
+				Debug.Log($"Monster HP:{m_Hp}");
 				break;
 		}
 	}
