@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.AI;
 public enum E_Layer
 {
 	None=-1,
@@ -73,6 +73,7 @@ public struct SkillData
 #endregion
 public class _GameManager : Singleton<_GameManager>
 {
+	public NavMeshSurface surface;
 	MapManager M_Map => MapManager.Instance;
 	PlayerManager M_Player => PlayerManager.Instance;
 	CameraManager M_Camera => CameraManager.Instance;
@@ -175,6 +176,8 @@ public class _GameManager : Singleton<_GameManager>
 		}
 		LoadStageData();
 		M_Map.CreateFixBlock();
+		//Update NavMesh
+		surface.BuildNavMesh();
 		while(true)
 		{
 		

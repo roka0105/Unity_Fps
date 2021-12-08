@@ -38,18 +38,43 @@ public class Monster : MonoBehaviour
 	}
 	void FollowMove()
 	{
+		Collider[] cols = Physics.OverlapSphere(transform.position, m_Range, 1 << 8);
+		if (cols.Length > 0)
+		{
+			for (int i = 0; i < cols.Length; ++i)
+			{
+				if (cols[i].tag == "Player")
+				{
+					target = cols[i].gameObject.transform;
+				}
+			}
+		}
+		else target = null;
 
+		if(target!=null)
+		{
+			Vector3 dir = target.position - transform.position;
+			transform.Translate(dir.normalized * m_Speed * Time.deltaTime);
+		}
 	}
-
+	private void OnCollisionEnter(Collision collision)
+	{
+		switch(collision.gameObject.layer)
+		{
+			case (int)E_Layer.Block:
+				break;
+			case (int)E_Layer.CrushBlock:
+				break;
+			case (int)E_Layer.Player:
+				break;
+			case (int)E_Layer.PlayerBullet:
+				break;
+		}
+	}
 	private void Update()
 	{
-		if(is_find_player)
-		{
-			FollowMove();
-		}
-		else
-		{
-			NomalMove();
-		}
+		
+		FollowMove();
+		
 	}
 }
