@@ -17,7 +17,7 @@ public class Bullet : MonoBehaviour
 	Vector3 startpos;//ÃÑÀ» ½ð ½ÃÁ¡ÀÇ À§Ä¡.
 	Vector3 dir;
 	Bullet m_this;
-	
+	Rigidbody m_rigidbody;
 	public Vector3 SetStartPos
 	{
 		set { startpos = value; }
@@ -42,6 +42,7 @@ public class Bullet : MonoBehaviour
 		m_AtkSpeed = gundata.m_AtkSpeed;
 		m_CoolTime = gundata.m_CoolTime;
 		m_this = gameObject.GetComponent<Bullet>();
+		m_rigidbody = gameObject.GetComponent<Rigidbody>();
 	}
 
 	private void Move()

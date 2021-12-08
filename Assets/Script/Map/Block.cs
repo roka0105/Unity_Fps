@@ -10,11 +10,17 @@ public class Block : MonoBehaviour, Dmginterface
 	int m_Position;
 	Block _this;
 	List<Block> ActiveCrushblock;
+	bool is_DoorOpen;
 	string _this_name;
 
 	protected BlockManager M_Block => BlockManager.Instance;
 	protected MapManager M_Map => MapManager.Instance;
 
+	public bool IS_DoorOpen
+	{
+		get { return is_DoorOpen; }
+		set { is_DoorOpen = value; }
+	}
 	public List<Block> ColliderItem
 	{
 		set { ActiveCrushblock = value; }
@@ -61,6 +67,7 @@ public class Block : MonoBehaviour, Dmginterface
 				//M_Block.DeSpawn(2, ActiveCrushblock[i]);
 				for (int j = 0; j < 4; ++j)
 				{
+					is_DoorOpen = true;
 					child[j].enabled = false;
 				}
 			}

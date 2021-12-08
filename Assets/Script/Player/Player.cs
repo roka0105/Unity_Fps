@@ -8,6 +8,9 @@ public class Player : Singleton<Player>
 	Vector3 PlayerPos;
 	float Speed;
 	float Scale;
+	bool is_open_door;
+	Block crush_collider = null;
+	Transform Nozzle;
 
 	public Vector3 GetPlayerPos
 	{
@@ -20,6 +23,11 @@ public class Player : Singleton<Player>
 			return this.gameObject.activeSelf;
 		}
 	}
+	public Transform NozzleRotation
+	{
+		get { return Nozzle; }
+	}
+	
 	public void SetPlayerPos(float x, float y, float z)
 	{
 		PlayerPos = this.transform.position;
@@ -37,7 +45,7 @@ public class Player : Singleton<Player>
 		float radius = Scale / 2;
 		int mask = 1 << 7;
 		bool[] is_doorcheck = new bool[2];
-		Block crush_collider = null;
+	
 		switch (dir)
 		{   //x
 			case 0:
@@ -45,6 +53,10 @@ public class Player : Singleton<Player>
 				{
 					#region 문이 열린지 체크
 					RaycastHit[] hitlist = Physics.RaycastAll(temp, transform.right, number + radius );
+					if(hitlist.Length==0)
+					{
+						crush_collider = null;
+					}
 					for (int i=0;i<hitlist.Length;++i)
 					{
 						if (hitlist[i].transform.gameObject.layer == (int)E_Layer.CrushBlock)
@@ -52,32 +64,35 @@ public class Player : Singleton<Player>
 							is_doorcheck[0] = true;
 							crush_collider = hitlist[i].transform.GetComponent<Block>();
 						}
-	     //               if (hitlist[i].transform.gameObject.layer==(int)E_Layer.Block)
-						//{
-						//	is_doorcheck[1]= true;
-						//}
-					
 					}
-					if(is_doorcheck[0])//&&is_doorcheck[1])
+					if(crush_collider != null && crush_collider.IS_DoorOpen)
 					{
-						if(!crush_collider.ColliderItem[0].GetComponentInChildren<MeshRenderer>().enabled)
+						if (!crush_collider.ColliderItem[0].GetComponentInChildren<MeshRenderer>().enabled)
 						{
+							is_open_door = true;
 							return number;
 						}
 					}
+					else { is_open_door = false; }
 					#endregion
-					if (Physics.Raycast(temp, transform.right, out hitinfo, number + radius, mask))
-					{ 
-						//temp.x = temp.x + number - hitinfo.point.x;
-						temp.x = hitinfo.point.x - (temp.x + radius);
-						return temp.x;
+					if (!is_open_door)
+					{
+						if (Physics.Raycast(temp, transform.right, out hitinfo, number + radius, mask))
+						{
+							//temp.x = temp.x + number - hitinfo.point.x;
+							temp.x = hitinfo.point.x - (temp.x + radius);
+							return temp.x;
+						}
 					}
 				}
 				else if (number < 0)
 				{
 					#region 문이 열린지 체크
-					RaycastHit[] hitlist = Physics.RaycastAll(temp, -(transform.right), number + radius * 2);
-				
+					RaycastHit[] hitlist = Physics.RaycastAll(temp, -(transform.right), number + radius);
+					if (hitlist.Length == 0)
+					{
+						crush_collider = null;
+					}
 					for (int i = 0; i < hitlist.Length; ++i)
 					{
 						if (hitlist[i].transform.gameObject.layer == (int)E_Layer.CrushBlock)
@@ -87,21 +102,25 @@ public class Player : Singleton<Player>
 						}
 					
 					}
-					if (is_doorcheck[0])
+					if (crush_collider != null && crush_collider.IS_DoorOpen)
 					{
 						if (!crush_collider.ColliderItem[0].GetComponentInChildren<MeshRenderer>().enabled)
 						{
+							is_open_door = true;
 							return number;
 						}
 					}
+					else { is_open_door = false; }
 					#endregion
-
-					if (Physics.Raycast(temp, -(transform.right), out hitinfo, -number + radius, mask))
+					if (!is_open_door)
 					{
-						Debug.DrawRay(temp, transform.right * (number - radius), Color.blue, float.PositiveInfinity);
-						//temp.x = temp.x - number + hitinfo.point.x;
-						temp.x = hitinfo.point.x - (temp.x - radius);
-						return temp.x;
+						if (Physics.Raycast(temp, -(transform.right), out hitinfo, -number + radius, mask))
+						{
+							Debug.DrawRay(temp, transform.right * (number - radius), Color.blue, float.PositiveInfinity);
+							//temp.x = temp.x - number + hitinfo.point.x;
+							temp.x = hitinfo.point.x - (temp.x - radius);
+							return temp.x;
+						}
 					}
 				}
 				return number;
@@ -111,8 +130,11 @@ public class Player : Singleton<Player>
 				if (number > 0)
 				{
 					#region 문이 열린지 체크
-					RaycastHit[] hitlist = Physics.RaycastAll(temp, transform.forward, number + radius*2);
-					
+					RaycastHit[] hitlist = Physics.RaycastAll(temp, transform.forward, number + radius);
+					if (hitlist.Length == 0)
+					{
+						crush_collider = null;
+					}
 					for (int i = 0; i < hitlist.Length; ++i)
 					{
 						if (hitlist[i].transform.gameObject.layer == (int)E_Layer.CrushBlock)
@@ -122,26 +144,35 @@ public class Player : Singleton<Player>
 						}
 						
 					}
-					if (is_doorcheck[0])
+					if (crush_collider!=null&&crush_collider.IS_DoorOpen)
 					{
 						if (!crush_collider.ColliderItem[0].GetComponentInChildren<MeshRenderer>().enabled)
 						{
+							is_open_door = true;
 							return number;
 						}
 					}
+					else { is_open_door = false; }
 					#endregion
-					if (Physics.Raycast(temp, transform.forward, out hitinfo, number + radius, mask))
+					if (!is_open_door)
 					{
-						Debug.DrawRay(temp, transform.forward * (number + radius), Color.blue, float.PositiveInfinity);
-						//temp.x = temp.x + number - hitinfo.point.x;
-						temp.z = hitinfo.point.z - (temp.z + radius);
-						return temp.z;
+						if (Physics.Raycast(temp, transform.forward, out hitinfo, number + radius, mask))
+						{
+							Debug.DrawRay(temp, transform.forward * (number + radius), Color.blue, float.PositiveInfinity);
+							//temp.x = temp.x + number - hitinfo.point.x;
+							temp.z = hitinfo.point.z - (temp.z + radius);
+							return temp.z;
+						}
 					}
 				}
 				else if (number < 0)
 				{
 					#region 문이 열린지 체크
-					RaycastHit[] hitlist = Physics.RaycastAll(temp, -(transform.forward), number + radius * 2);
+					RaycastHit[] hitlist = Physics.RaycastAll(temp, -(transform.forward), number + radius);
+					if (hitlist.Length == 0)
+					{
+						crush_collider = null;
+					}
 					for (int i = 0; i < hitlist.Length; ++i)
 					{
 						if (hitlist[i].transform.gameObject.layer == (int)E_Layer.CrushBlock)
@@ -150,20 +181,25 @@ public class Player : Singleton<Player>
 							crush_collider = hitlist[i].transform.GetComponent<Block>();
 						}
 					}
-					if (is_doorcheck[0])
+					if (crush_collider != null && crush_collider.IS_DoorOpen)
 					{
 						if (!crush_collider.ColliderItem[0].GetComponentInChildren<MeshRenderer>().enabled)
 						{
+							is_open_door = true;
 							return number;
 						}
 					}
+					else { is_open_door = false; }
 					#endregion
-					if (Physics.Raycast(temp, -(transform.forward), out hitinfo, -number + radius, mask))
+					if (!is_open_door)
 					{
-						Debug.DrawRay(temp, transform.forward * (number - radius), Color.blue, float.PositiveInfinity);
-						//temp.x = temp.x - number + hitinfo.point.x;
-						temp.z = hitinfo.point.z - (temp.z - radius);
-						return temp.z;
+						if (Physics.Raycast(temp, -(transform.forward), out hitinfo, -number + radius, mask))
+						{
+							Debug.DrawRay(temp, transform.forward * (number - radius), Color.blue, float.PositiveInfinity);
+							//temp.x = temp.x - number + hitinfo.point.x;
+							temp.z = hitinfo.point.z - (temp.z - radius);
+							return temp.z;
+						}
 					}
 				}
 				return number;
@@ -204,6 +240,7 @@ public class Player : Singleton<Player>
 		PlayerPos = this.transform.position;
 		Speed = 3f;
 		Scale = this.transform.localScale.x;
+		Nozzle = GameObject.Find("Nozzle").GetComponent<Transform>();
 	}
 	void Update()
 	{

@@ -77,6 +77,8 @@ public class _GameManager : Singleton<_GameManager>
 	PlayerManager M_Player => PlayerManager.Instance;
 	CameraManager M_Camera => CameraManager.Instance;
 	BulletManager M_Bullet => BulletManager.Instance;
+
+	MonsterManager M_Monster => MonsterManager.Instance;
 	#region 맵 매니저에 줄 정보
 	[SerializeField]
 	Vector3 m_Startpos;
@@ -143,6 +145,13 @@ public class _GameManager : Singleton<_GameManager>
 
 	List<GunData> m_GunDataList;
 	#endregion
+	#region 몬스터
+	public Monster m_MonsterPrefeb;
+	public Monster MonsterPrefeb
+	{
+		get { return m_MonsterPrefeb; }
+	}
+	#endregion
 	//스테이지 리스트에서 스테이지 관련 정보 읽어와서 현재 게임 상태로 적용하기.
 	void LoadStageData()
 	{
@@ -176,6 +185,17 @@ public class _GameManager : Singleton<_GameManager>
 			if (!RaycastSpawn(player))
 			{
 				break;
+			}
+		}
+		for(int i=0;i< m_StageDataList[nowstage].m_EnemyData.m_TotalEnemy;++i)
+		{
+			while (true)
+			{
+				Monster item = RandomEnemyPos();
+				if (!RaycastSpawn(item.gameObject))
+				{
+					break;
+				}
 			}
 		}
 	}
@@ -228,6 +248,19 @@ public class _GameManager : Singleton<_GameManager>
 		M_Player.SetActivePlayer(true);
 		M_Camera.Movecheck = true;
 	}
+	Monster RandomEnemyPos()
+	{
+		float x;
+		float z;
+		float y = 0;
+		x = Random.Range(m_Startpos.x + 0.5f, m_Endpos.x - 0.5f);
+		y = m_RespawnPos.y;
+		z = Random.Range(m_Startpos.z - 0.5f, m_Endpos.z + 0.5f);
+
+		Monster item=M_Monster.Spawn(E_MonsterType.Nomal);
+		item.SetPos(x, y, z);
+		return item;
+	}
 	public void AddCantRespawnList(Vector3 pos)
 	{
 		m_StageDataList[nowstage].m_MapData.m_CantRespawnPos.Add(pos);
@@ -243,7 +276,7 @@ public class _GameManager : Singleton<_GameManager>
 	private void Start()
 	{
 		
-		m_RespawnPos.y = 1;
+		m_RespawnPos.y = 2;
 		m_StageDataList = new List<StageData>();
 		m_GunDataList = new List<GunData>();
 		StageData temp1 = new StageData();

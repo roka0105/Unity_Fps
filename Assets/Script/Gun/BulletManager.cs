@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum E_BulletType
 {
-	None=-1,
+	None = -1,
 	Nomal,
 	Max,
 }
@@ -13,12 +13,15 @@ public class BulletManager : Singleton<BulletManager>
 	protected _GameManager M_Game => _GameManager.Instance;
 	protected PlayerManager M_Player => PlayerManager.Instance;
 	protected CameraManager M_Camera => CameraManager.Instance;
-	protected BlockManager M_Block=>BlockManager.Instance;
+	protected BlockManager M_Block => BlockManager.Instance;
 
 	Dictionary<E_BulletType, MemoryPool<Bullet>> BulletPoollist;
 	Transform BulletParent;
 	GunData Gundata;
-
+	public GunData Datalist
+	{
+		get { return Gundata; }
+	}
 	public void Init()
 	{
 		BulletPoollist = new Dictionary<E_BulletType, MemoryPool<Bullet>>();
@@ -32,10 +35,10 @@ public class BulletManager : Singleton<BulletManager>
 	{
 		//delegate_crush_block+=M_
 	}
-	public Bullet Spawn(int type,int count=1)
+	public Bullet Spawn(int type, int count = 1)
 	{
 		Bullet item = null;
-		switch((E_BulletType)type)
+		switch ((E_BulletType)type)
 		{
 			case E_BulletType.Nomal:
 				for (int i = 0; i < count; ++i)
@@ -48,7 +51,7 @@ public class BulletManager : Singleton<BulletManager>
 					item.transform.position = M_Player.GetObjPlayer.transform.position;
 					item.SetStartPos = item.transform.position;
 					//item.GetBullet;
-					item.SetDir=M_Player.GetObjPlayer.transform.forward;
+					
 					if (item.name != "Bullet")
 						item.name = "Bullet";
 				}
@@ -56,9 +59,9 @@ public class BulletManager : Singleton<BulletManager>
 		}
 		return item;
 	}
-	public void DeSpawn(int type,Bullet obj)
+	public void DeSpawn(int type, Bullet obj)
 	{
-		switch((E_BulletType)type)
+		switch ((E_BulletType)type)
 		{
 			case E_BulletType.Nomal:
 				BulletPoollist[E_BulletType.Nomal].DeSpawn(obj);

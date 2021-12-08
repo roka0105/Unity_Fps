@@ -10,8 +10,10 @@ public class PlayerManager : Singleton<PlayerManager>
     public void ShotBullet(int guntype,int count)
 	{
         Bullet item=M_Bullet.Spawn(guntype, count);
-        item.transform.localEulerAngles = new Vector3(90f, M_Playerobj.transform.eulerAngles.y, 0f);
-	}
+        item.transform.position= M_Playerobj.NozzleRotation.transform.position;
+        item.transform.localEulerAngles = new Vector3(M_Playerobj.NozzleRotation.transform.eulerAngles.x+90, M_Playerobj.transform.eulerAngles.y,0f);
+        item.SetDir = item.transform.up;
+    }
    
     public bool ActiveSelf()
 	{
@@ -33,5 +35,9 @@ public class PlayerManager : Singleton<PlayerManager>
     {
         get { return M_Playerobj.gameObject; }
     }
+    public void SetNozzleRotation(Vector3 angle)
+	{
+        M_Playerobj.NozzleRotation.transform.eulerAngles =angle;
+	}
    
 }
